@@ -1,24 +1,24 @@
-use pairing_ce::{CurveAffine, RawEncodable, Engine, GenericCurveProjective, EncodedPoint, GroupDecodingError};
-use codec::{ Encode, Decode };
+use codec::{Decode, Encode};
+use pairing_ce::{
+    CurveAffine, EncodedPoint, Engine, GenericCurveProjective, GroupDecodingError, RawEncodable,
+};
 
 mod verifier;
 pub use self::verifier::*;
+pub use pairing_ce;
 
 #[derive(Clone, Encode, Decode, Default, Eq)]
 pub struct Proof<E: Engine> {
     pub a: E::G1Affine,
     pub b: E::G2Affine,
-    pub c: E::G1Affine
+    pub c: E::G1Affine,
 }
 
 impl<E: Engine> PartialEq for Proof<E> {
     fn eq(&self, other: &Self) -> bool {
-        self.a == other.a &&
-        self.b == other.b &&
-        self.c == other.c
+        self.a == other.a && self.b == other.b && self.c == other.c
     }
 }
-
 
 #[derive(Clone)]
 pub struct VerifyingKey<E: Engine> {
@@ -45,19 +45,18 @@ pub struct VerifyingKey<E: Engine> {
     // for all public inputs. Because all public inputs have a dummy constraint,
     // this is the same size as the number of inputs, and never contains points
     // at infinity.
-    pub ic: Vec<E::G1Affine>
+    pub ic: Vec<E::G1Affine>,
 }
-
 
 impl<E: Engine> PartialEq for VerifyingKey<E> {
     fn eq(&self, other: &Self) -> bool {
-        self.alpha_g1 == other.alpha_g1 &&
-        self.beta_g1 == other.beta_g1 &&
-        self.beta_g2 == other.beta_g2 &&
-        self.gamma_g2 == other.gamma_g2 &&
-        self.delta_g1 == other.delta_g1 &&
-        self.delta_g2 == other.delta_g2 &&
-        self.ic == other.ic
+        self.alpha_g1 == other.alpha_g1
+            && self.beta_g1 == other.beta_g1
+            && self.beta_g2 == other.beta_g2
+            && self.gamma_g2 == other.gamma_g2
+            && self.delta_g1 == other.delta_g1
+            && self.delta_g2 == other.delta_g2
+            && self.ic == other.ic
     }
 }
 
@@ -69,9 +68,8 @@ pub struct PreparedVerifyingKey<E: Engine> {
     /// -delta in G2
     neg_delta_g2: <E::G2Affine as CurveAffine>::Prepared,
     /// Copy of IC from `VerifiyingKey`.
-    ic: Vec<E::G1Affine>
+    ic: Vec<E::G1Affine>,
 }
-
 
 /// This is an error that could occur during circuit synthesis contexts,
 /// such as CRS generation, proving or verification.
@@ -92,6 +90,5 @@ pub enum SynthesisError {
     /// During verification, our verifying key was malformed.
     MalformedVerifyingKey,
     /// During CRS generation, we observed an unconstrained auxillary variable
-    UnconstrainedVariable
+    UnconstrainedVariable,
 }
-
